@@ -46,19 +46,8 @@ module.exports.checkPermission = function checkPermission(username, permission) 
  * else return undefined
  */
 module.exports.login = function(username, password) {
-    db = connectToDB()
-    cruser = db.collection("users").find({ "username": username })
-    var user;
-
-    function iterateFunc(doc) {
-        user = doc;
-    }
-
-    function errorFunc(error) {
-        console.log(error);
-    }
-
-    cursor.forEach(iterateFunc, errorFunc);
+    var db = connectToDB();
+    var user = db.collection("users").findOne({ "username": username });
 
     if (user.username === username && user.password === password && user.active) {
         return user;
@@ -73,19 +62,9 @@ module.exports.login = function(username, password) {
  */
 module.exports.getType = function(username) {
     // search the user name in th DB and return his type
-    db = connectToDB()
-    cruser = db.collection("users").find({ "username": username })
-    var user;
+    var db = connectToDB();
+    var user = db.collection("users").findOne({ "username": username });
 
-    function iterateFunc(doc) {
-        user = doc;
-    }
-
-    function errorFunc(error) {
-        console.log(error);
-    }
-
-    cursor.forEach(iterateFunc, errorFunc);
     if (user.username === username && user.active) {
         return user.type;
     }
@@ -98,7 +77,7 @@ module.exports.getType = function(username) {
  * @returns {{massage: string, succeeded: boolean}} textual message and a boolean variable depending on the success / failure of the insertion
  */
 module.exports.addUser = function(user) {
-    connectToDB()
+    var db = connectToDB();
     let username = user.username;
 
     // check if the user name already exist
@@ -106,7 +85,7 @@ module.exports.addUser = function(user) {
         return { massage: "Username already exist!", succeeded: false };
 
     // if username not exist add the user into the DB
-    DB.collection("users").insertOne({
+    db.collection("users").insertOne({
         "firstName": user.firstName,
         "lastName": user.lastName,
         "username": user.username,
@@ -127,62 +106,7 @@ module.exports.moveUser = function(username, newType) {
     if (oldType === undefined)
         return false;
 
-    // get the index of the user in his list
-    let index = users[oldType].findIndex(((value) => value.username === username));
-
-    // check if the user is already in the newType list and mark as not active
-    let found = false;
-    for (let i in users[newType])
-        if (users[newType][i].username === username) {
-            users[newType][i].active = true;
-            found = true;
-            break;
-        }
-
-        // if not found in newType, perform deep copy into the new type list
-    if (!found)
-        users[newType].push(JSON.parse(JSON.stringify(users[oldType][index])));
-
-    // update the user in the old type
-    users[oldType][index].active = false;
-
-    // override the DB to save the changes
-    fs.writeFile('./DB/users.json', JSON.stringify(users, null, 4), 'utf8', _ => null);
+    var db = connectToDB();
+    var user = db.collection("users").findOneAndUpdate({ "username": username }, { $set: { type: newType } });
     return true;
 }
-
-
-
-async function main() {
-    /**
-     * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
-     * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
-     */
-    const uri = "mongodb+srv://admin:Mongodb2021@cluster0.u7xlk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-    const client = new MongoClient(uri);
-    try {
-        // Connect to the MongoDB cluster
-        await client.connect();
-        console.log("connected to mongo :)")
-            // Make the appropriate DB calls
-        const db = await client.db("FlowerOrderingSystem");
-        console.log("created db")
-
-        db.collection("users").insertOne({
-            firstName: "michael",
-            lastName: "goldmeier",
-            username: "mgoldmeier",
-            password: "123",
-            image: "",
-            "type": "admin",
-            active: true
-        });
-        console.log("added user")
-        await listDatabases(client);
-    } catch (e) {
-        console.error(e);
-    } finally {
-        await client.close();
-    }
-}
-main().catch(console.error);
