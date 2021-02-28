@@ -1,0 +1,37 @@
+<section class="clean-block about-us">
+    <div class="container">
+        <div class="block-heading">
+            <h2 class="text-info">Our catalog</h2>
+            <p>We are proud to present to you the huge variety of flowers that we sell at affordable prices for every
+                pocket.</p>
+        </div>
+        <div class="row justify-content-center align-items-center">
+            <% catalog.forEach(function (flower) {
+                var colors = palette(flower.image).colors;
+            %>
+
+            <div class="col-sm-6 col-lg-4" style="padding-bottom: 15px;padding-top: 15px;">
+                <div class="card clean-card text-center"><img class="card-img-top w-100 d-block"
+                                                              src="<%= flower.image %>"
+                                                              style="width: 328px;height: 218.5px;object-fit: cover;">
+                    <div class="card-body info">
+                        <h5 class="card-title"><%= flower.name %></h5>
+                        <strong><%= flower.price %>$</strong>
+                        <p class="card-text">Colors: <%= flower.color %></p>
+                        <p class="card-text"><%= flower.description %></p>
+                        <button class="btn btn-primary" type="button"
+                                style="background:rgba(<%= colors[2].toString() %>); margin-right: 5px;margin-left: 5px;">
+                            Buy now
+                        </button>
+                        <button class="btn btn-primary" type="button"
+                                style="background:rgba(<%= colors[2].toString() %>); margin-right: 5px;margin-left: 5px;">
+                            Add to cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <% }) %>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,36 @@
+<script>
+    $(() => {
+        $("#send-btn").on("click", function () {
+            $("#contact-us-form").css("opacity", 0.5);
+            $("#contact-us-form :input").prop("disabled", true);
+            $("#sent-banner").css("visibility", "visible");
+            location.assign("#");
+        });
+        $("#close-sent-btn").on("click", function () {
+            $("#sent-banner").css("visibility", "collapse");
+        });
+    });
+</script>
+
+<section id="contact-us" class="clean-block clean-form dark" style="background: rgb(212,234,255);">
+    <div id="sent-banner" class="clean-block add-on call-to-action blue"
+         style="visibility: collapse; padding-top: 20px;padding-bottom: 10px;">
+        <h6>Sent!<br>Apparently no one is going to read it because this site is not real, but thanks for posting</h6>
+        <button id="close-sent-btn" class="btn btn-outline-light" type="button" style="margin-left: 20px">close</button>
+    </div>
+    <div class="container">
+        <div class="block-heading">
+            <h2 class="text-info">Contact Us</h2>
+            <p>Want to know more about us?<br>Do you have any more questions you would like to ask?</p>
+        </div>
+        <form id="contact-us-form">
+            <div class="form-group"><label>Name</label><input class="form-control" type="text"></div>
+            <div class="form-group"><label>Subject</label><input class="form-control" type="text"></div>
+            <div class="form-group"><label>Email</label><input class="form-control" type="text"></div>
+            <div class="form-group"><label>Message</label><textarea class="form-control"></textarea></div>
+            <div class="form-group">
+                <button class="btn btn-primary btn-block" id="send-btn" type="button">Send</button>
+            </div>
+        </form>
+    </div>
+</section>

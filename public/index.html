@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Home - Brand</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="assets/css/styles.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="script.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar" style="padding: 5px;">
+        <div class="container"><img src="assets/img/flowers.png" width="5%" style="margin: 10px;"><a class="navbar-brand logo" href="#">Flowers For Everyone!</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div
+                class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav ml-auto" id="navbar-ul">
+                    <li class="nav-item"><a id="about-btn" class="nav-link active" href="#">About</a></li>
+                    <li class="nav-item"><a id="contact-us-btn" class="nav-link active" href="#">Contact Us</a></li>
+                </ul><button class="btn btn-info" type="button" style="border-radius: 5px;" data-toggle="modal" data-target="#logInModal"><i class="icon-login" style="margin: 0;margin-right: 10px;"></i><span id="login-button">Login</span></button></div>
+        </div>
+    </nav>
+    <main class="page landing-page">
+        <div class="modal fade" role="dialog" tabindex="-1" id="logInModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <section class="clean-block clean-form dark" style="padding: 0px;border-radius: 25px;">
+                        <div class="container" style="padding-right: 0;padding-left: 0;">
+                            <h2 class="text-info" style="margin: 0;text-align: center;margin-top: 25px;">Log In</h2>
+                            <form style="margin: 20px;" action="hello" id="loginForm" method="post">
+                                <div class="form-group"><label id="username-label" for="username">Username</label><input class="form-control item" type="text" id="username"></div>
+                                <div class="form-group"><label id="password-label" for="password">Password</label><input class="form-control" type="password" id="password"></div>
+                                <div class="form-group">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" id="checkbox"><label class="form-check-label" for="checkbox">Remember me</label></div>
+                                </div>
+                                <button class="btn btn-primary btn-block" type="submit" style="color: rgb(255,255,255);">Log In</button>
+                                <button class="btn btn-primary btn-block" type="button" style="background: rgb(213,213,213);color: rgb(0,0,0);border-style: none;" data-dismiss="modal">Cancel</button>
+                            </form>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div id="main-content">
+            <section class="clean-block clean-hero" style="color: rgba(9, 162, 255, 0.85);background: url(&quot;https://images.unsplash.com/photo-1471696035578-3d8c78d99684?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&quot;);">
+                <div class="text">
+                    <h2>Order your flowers now!</h2>
+                    <p>Your flowers is just on click away!<br>To order flowers you need to log in</p><button class="btn btn-outline-light btn-lg" data-bs-hover-animate="pulse" type="button" data-toggle="modal" data-target="#logInModal">Login</button></div>
+            </section>
+        </div>
+    </main>
+    <footer class="page-footer dark" style="padding: 0;">
+        <div class="footer-copyright" style="margin-top: 0;">
+            <p>© 2020 If you've read this far, well done</p>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script src="assets/js/script.min.js"></script>
+</body>
+
+</html>

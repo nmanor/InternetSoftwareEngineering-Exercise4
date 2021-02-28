@@ -1,0 +1,165 @@
+<script>
+    $("#save-btn").on("click", async function () {
+        let firstName = $("#first-name-in").val();
+        let lastName = $("#last-name-in").val();
+        let username_ = $("#username-in").val();
+        let password = $("#password-in").val();
+        let imageURL = $("#image-url-in").val();
+        let type = "customers";
+        <% if(permission === "admin") { %>
+        type = $("#type-selector").val();
+        <% } %>
+
+        // check if any of the fields is empty
+        if ([firstName, lastName, username_, password, imageURL].filter(i => i.length === 0).length > 0) {
+            $("#first-name-in").append('<style>.item::placeholder{color:red}</style>');
+            $("#last-name-in").append('<style>.item::placeholder{color:red}</style>');
+            $("#username-in").append('<style>.item::placeholder{color:red}</style>');
+            $("#password-in").append('<style>.item::placeholder{color:red}</style>');
+            $("#image-url-in").append('<style>.item::placeholder{color:red}</style>');
+            return false;
+        }
+
+        // else, try send the new user to the server
+        $("#save-spinner").css("visibility", "visible")
+        let resp = await fetch(`/add-user/${username}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify({
+                    firstName: firstName, lastName: lastName, username: username_, password: password,
+                    imageURL: imageURL, type: type
+                })
+            });
+
+        if (resp.ok) {
+            resp.text().then(function (text) {
+                console.log(text);
+                $("#message-banner").removeClass("bg-danger").addClass("bg-info").css("visibility", "visible");
+                $("#message-text").html(text);
+                location.assign("#");
+            });
+        } else {
+            resp.text().then(function (text) {
+                console.log(text);
+                $("#message-banner").addClass("bg-danger").removeClass("bg-info").css("visibility", "visible");
+                $("#message-text").html(text);
+                location.assign("#");
+            });
+        }
+    });
+
+    $("#close-message-btn").on("click", async function () {
+        $("#main-content").load(`/users/${username}`);
+    });
+
+    <% if(permission === "admin") { %>
+    function updateUser(newType, username_) {
+        fetch(`/move-user/${username}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify({
+                    username: username_, newType: newType
+                })
+            }).text().then(function (text) {
+            console.log(text);
+        });
+    }
+    <% } %>
+</script>
+
+<section class="clean-block about-us">
+    <div id="message-banner" class="clean-block add-on call-to-action"
+         style="visibility: collapse; padding-top: 20px;padding-bottom: 10px">
+        <h5 style="color: white" id="message-text"></h5>
+        <button id="close-message-btn" class="btn btn-outline-light" type="button" style="margin-left: 20px">refresh
+        </button>
+    </div>
+
+    <div class="container">
+        <div class="block-heading">
+            <h2 class="text-info">Users</h2>
+            <p>View all users of all types, Add new <%= permission === "admin" ?
+                        "customers, employees and managers, change user permissions"
+                        : "customers" %></p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-sm-6 col-lg-4" style="margin-bottom: 30px">
+                <div class="card clean-card text-center">
+                    <div class="card-body info">
+                        <h4 class="card-title">
+                            <% if (permission === "admin") { %>
+                                New User
+                            <% } else { %>
+                                New customer
+                            <% } %>
+                        </h4>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text"
+                                                       id="first-name-in" placeholder="First name"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text"
+                                                       id="last-name-in" placeholder="Last name"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text"
+                                                       id="username-in" placeholder="Username"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="password"
+                                                       id="password-in" placeholder="Password"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="url"
+                                                       id="image-url-in" placeholder="Image URL"></div>
+
+                        <% if (permission === "admin") { %>
+                            <select style="font-size: 12px" class="custom-select" id="type-selector">
+                                <option style="font-size: 12px" value="admins" selected>Admin</option>
+                                <option style="font-size: 12px" value="employees">Employee</option>
+                                <option style="font-size: 12px" value="customers">Customer</option>
+                            </select>
+                        <% } %>
+                        <button class="btn btn-info" id="save-btn" style="margin-top: 10px;">
+                            <span id="save-spinner" style="visibility: hidden" class="spinner-border spinner-border-sm"
+                                  role="status" aria-hidden="true"></span>
+                            <span>Save</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <% for(let type in users) {
+                    for(let user in users[type]) {
+                user = users[type][user];
+            if(user.active) { %>
+                <div class="col-sm-6 col-lg-4" style="margin-bottom: 30px">
+                    <div class="card clean-card text-center align-items-center">
+                        <img class="card-img-top w-50 d-block" style="border-radius: 40%; margin-top: 15px;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
+                             src="<%= user.image %>">
+                        <div class="card-body info">
+                            <h4 class="card-title"><%= user.firstName + " " + user.lastName %></h4>
+                            <p class="card-text">
+                                <%= user.username %>
+                                <% if(permission !== "admin") { %>
+                                    <%= " | " + type.charAt(0).toUpperCase() + type.slice(1, type.length - 1) %>
+                                <% } else { %>
+                                    <select style="font-size: 12px" class="custom-select"
+                                            onchange="updateUser(this.options[this.selectedIndex].value, '<%= user.username %>')">
+                                        <option value="admins" <%= type === "admins" ? "selected" : "" %> >Admin
+                                        </option>
+                                        <option value="employees" <%= type === "employees" ? "selected" : "" %> >
+                                            Employee
+                                        </option>
+                                        <option value="customers" <%= type === "customers" ? "selected" : "" %> >
+                                            Customer
+                                        </option>
+                                    </select>
+                                <% } %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <% }}} %>
+        </div>
+    </div>
+</section>
