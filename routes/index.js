@@ -3,6 +3,7 @@ const path = require('path');
 const usersModel = require('../models/users')
 const branchesModel = require('../models/branches')
 const fs = require('fs');
+const ejs = require('ejs');
 
 let router = express.Router();
 
@@ -19,7 +20,7 @@ router.post("/login", function (req, res) {
     // else, send the client the relevant data
     else {
         // render the welcome banner
-        let str = fs.readFileSync(path.join(__dirname, "views", "welcome-intro.ejs"), 'utf8');
+        let str = fs.readFileSync(path.join(__dirname, "..", "views", "welcome-intro.ejs"), 'utf8');
         let welcomeHTML = ejs.render(str, userData);
 
         // create the new buttons for the nav bar

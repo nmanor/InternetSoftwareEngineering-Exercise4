@@ -1,3 +1,42 @@
+const {MongoClient} = require('mongodb');
+
+/**
+ * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
+ * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
+ */
+const uri = "mongodb+srv://admin:Mongodb2021@cluster0.u7xlk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+let client = new MongoClient(uri);
+
+// Connect to the MongoDB cluster
+let db;
+client.connect().then(() => {
+    console.log("connected to mongo :)")
+    // Make the appropriate DB calls
+    db = client.db("FlowerOrderingSystem");
+    console.log("created db")
+});
+
+// async function connectToDB() {
+//     /**
+//      * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
+//      * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
+//      */
+//     const uri = "mongodb+srv://admin:Mongodb2021@cluster0.u7xlk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+//     let client = new MongoClient(uri);
+//
+//     // Connect to the MongoDB cluster
+//     let db;
+//     await client.connect().then(() => {
+//         console.log("connected to mongo :)")
+//         // Make the appropriate DB calls
+//         db = client.db("FlowerOrderingSystem");
+//         console.log("created db")
+//     });
+//
+//     return db;
+// }
+
+
 /**
  * Function that receives a username and permission and checks whether the user has the appropriate permission
  * @param username {string} the username you need to check
@@ -22,17 +61,11 @@ module.exports.checkPermission = function checkPermission(username, permission) 
  * else return undefined
  */
 module.exports.login = function (username, password) {
-    for (let type in users)
-        for (let user in users[type]) {
-            try {
-                user = users[type][user];
-                if (user.username === username && user.password === password && user.active) {
-                    user["type"] = type.substring(0, type.length - 1);
-                    return user;
-                }
-            } catch {
-            }
-        }
+    let user = db.collection("users").findOne({"username": username});
+
+    if (user.username === username && user.password === password && user.active) {
+        return user;
+    }
     return undefined;
 }
 
@@ -43,45 +76,40 @@ module.exports.login = function (username, password) {
  */
 module.exports.getType = function (username) {
     // search the user name in th DB and return his type
-    for (let type in users) {
-        for (let user in users[type]) {
-            try {
-                user = users[type][user];
-                if (user.username === username && user.active) {
-                    return type.substring(0, type.length - 1);
-                }
-            } catch {
-            }
-        }
+    var db = connectToDB();
+    var user = db.collection("users").findOne({"username": username});
+
+    if (user.username === username && user.active) {
+        return user.type;
     }
     return undefined;
 }
 
- /**
+/**
  * Function that receives user data and adds it to DB
  * @param user {Object} the new user details
  * @returns {{massage: string, succeeded: boolean}} textual message and a boolean variable depending on the success / failure of the insertion
  */
- module.exports.addUser = function (user) {
+module.exports.addUser = function (user) {
+    var db = connectToDB();
     let username = user.username;
-    let type = user.type;
 
     // check if the user name already exist
     if (getType(username) !== undefined)
         return {massage: "Username already exist!", succeeded: false};
 
     // if username not exist add the user into the DB
-    users[type].push({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        password: user.password,
-        image: user.imageURL,
-        active: true
+    db.collection("users").insertOne({
+        "firstName": user.firstName,
+        "lastName": user.lastName,
+        "username": user.username,
+        "password": user.password,
+        "type": user.type,
+        "image": user.imageURL,
+        "active": true
     });
 
-    // override the DB to save the new user
-    fs.writeFile('./DB/users.json', JSON.stringify(users, null, 4), 'utf8', _ => null);
+
     return {massage: "User added successfully!", succeeded: true};
 }
 
@@ -92,26 +120,7 @@ module.exports.moveUser = function (username, newType) {
     if (oldType === undefined)
         return false;
 
-    // get the index of the user in his list
-    let index = users[oldType].findIndex(((value) => value.username === username));
-
-    // check if the user is already in the newType list and mark as not active
-    let found = false;
-    for (let i in users[newType])
-        if (users[newType][i].username === username) {
-            users[newType][i].active = true;
-            found = true;
-            break;
-        }
-
-    // if not found in newType, perform deep copy into the new type list
-    if (!found)
-        users[newType].push(JSON.parse(JSON.stringify(users[oldType][index])));
-
-    // update the user in the old type
-    users[oldType][index].active = false;
-
-    // override the DB to save the changes
-    fs.writeFile('./DB/users.json', JSON.stringify(users, null, 4), 'utf8', _ => null);
+    var db = connectToDB();
+    var user = db.collection("users").findOneAndUpdate({"username": username}, {$set: {type: newType}});
     return true;
 }
