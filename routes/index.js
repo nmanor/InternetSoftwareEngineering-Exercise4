@@ -4,6 +4,7 @@ const usersModel = require('../models/users')
 const branchesModel = require('../models/branches')
 const fs = require('fs');
 const ejs = require('ejs');
+const palette = require('image-palette');
 
 let router = express.Router();
 
@@ -45,9 +46,9 @@ router.get("/contact-us/:username", function(req, res) {
     res.render("contact-us.ejs");
 });
 
-router.get("/branches/:username", function(req, res) {
-    if (usersModel.checkPermission(req.params.username, "admin"))
-        res.render("branches-list.ejs", { branches: branchesModel.getAllBranches() });
+router.get("/branches/:username", async function(req, res) {
+    if (await usersModel.checkPermission(req.params.username, "admin"))
+        res.render("branches-list.ejs", { branches: await branchesModel.getAllBranches(), palette: palette });
     else
         res.render("permission-denied.ejs");
 });

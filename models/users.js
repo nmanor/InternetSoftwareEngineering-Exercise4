@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const {MongoClient} = require('mongodb');
 
 /**
  * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
@@ -11,30 +11,10 @@ let client = new MongoClient(uri);
 let db;
 client.connect().then(() => {
     console.log("connected to mongo :)")
-        // Make the appropriate DB calls
+    // Make the appropriate DB calls
     db = client.db("FlowerOrderingSystem");
     console.log("created db")
 });
-
-// async function connectToDB() {
-//     /**
-//      * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
-//      * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
-//      */
-//     const uri = "mongodb+srv://admin:Mongodb2021@cluster0.u7xlk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-//     let client = new MongoClient(uri);
-//
-//     // Connect to the MongoDB cluster
-//     let db;
-//     await client.connect().then(() => {
-//         console.log("connected to mongo :)")
-//         // Make the appropriate DB calls
-//         db = client.db("FlowerOrderingSystem");
-//         console.log("created db")
-//     });
-//
-//     return db;
-// }
 
 
 /**
@@ -43,9 +23,9 @@ client.connect().then(() => {
  * @param permission {string} requested permission
  * @returns {boolean} true if permission is approved and false if not
  */
-module.exports.checkPermission = function checkPermission(username, permission) {
-    let type = getType(username);
-    let permissions = { admin: 3, employee: 2, customer: 1 };
+module.exports.checkPermission = async function checkPermission(username, permission) {
+    let type = await getType(username);
+    let permissions = {admin: 3, employee: 2, customer: 1};
 
     // returns if the user permission is great or equal to the excepted permission
     if (type !== undefined)
@@ -60,8 +40,8 @@ module.exports.checkPermission = function checkPermission(username, permission) 
  * @returns {undefined|Object} returns Object with the user data if the user exist & the password matches the username,
  * else return undefined
  */
-module.exports.login = async function(username, password) {
-    let user = await db.collection("users").findOne({ "username": username });
+module.exports.login = async function (username, password) {
+    let user = await db.collection("users").findOne({"username": username});
 
     if (user.username === username && user.password === password && user.active) {
         console.log(user)
@@ -75,32 +55,31 @@ module.exports.login = async function(username, password) {
  * @param username {string} the username on which you want to receive the information
  * @returns {string|undefined} the user type, undefined if the user does not exist
  */
-module.exports.getType = function(username) {
+async function getType (username) {
     // search the user name in th DB and return his type
-    var db = connectToDB();
-    var user = db.collection("users").findOne({ "username": username });
+    let user = await db.collection("users").findOne({"username": username});
 
-    if (user.username === username && user.active) {
+    if (user !== null && user.username === username && user.active) {
         return user.type;
     }
     return undefined;
 }
+module.exports.getType = getType
 
 /**
  * Function that receives user data and adds it to DB
  * @param user {Object} the new user details
  * @returns {{massage: string, succeeded: boolean}} textual message and a boolean variable depending on the success / failure of the insertion
  */
-module.exports.addUser = function(user) {
-    var db = connectToDB();
+module.exports.addUser = async function (user) {
     let username = user.username;
 
     // check if the user name already exist
-    if (getType(username) !== undefined)
-        return { massage: "Username already exist!", succeeded: false };
+    if (await getType(username) !== undefined)
+        return {massage: "Username already exist!", succeeded: false};
 
     // if username not exist add the user into the DB
-    db.collection("users").insertOne({
+    await db.collection("users").insertOne({
         "firstName": user.firstName,
         "lastName": user.lastName,
         "username": user.username,
@@ -110,18 +89,23 @@ module.exports.addUser = function(user) {
         "active": true
     });
 
-
-    return { massage: "User added successfully!", succeeded: true };
+    return {massage: "User added successfully!", succeeded: true};
 }
 
-module.exports.moveUser = function(username, newType) {
-    let oldType = getType(username) + "s";
+module.exports.moveUser = async function (username, newType) {
+    let oldType = await getType(username) + "s";
 
-    // if the user dont in the DB return flase
+    // if the user dont in the DB return false
     if (oldType === undefined)
         return false;
 
-    var db = connectToDB();
-    db.collection("users").findOneAndUpdate({ "username": username }, { $set: { type: newType } });
+    await db.collection("users").findOneAndUpdate({"username": username}, {$set: {type: newType}});
     return true;
+}
+
+/**
+ * @returns {Promise<Promise|void|any[]>} All users saved in the system
+ */
+module.exports.getAllUsers = async function () {
+    return db.collection("users").find().toArray();
 }

@@ -1,23 +1,22 @@
 const express = require('express');
-const path = require('path');
 const usersModel = require('../models/users')
 
 let router = express.Router();
 
 // send the users list section when requested
-router.get("/users/:username", function (req, res) {
+router.get("/:username", async function (req, res) {
   // check that the user has at least employee permission
   let username = req.params.username;
-  if (usersModel.checkPermission(username, "employee"))
-    res.render(path.join("partials", "users-list.ejs"), {users: users, permission: usersModel.getType(username)});
+  if (await usersModel.checkPermission(username, "employee"))
+    res.render("users-list.ejs", {users: await usersModel.getAllUsers(), permission: await usersModel.getType(username)});
   // if not, send to the client that the permission denied
   else
-    res.render(path.join("partials", "permission-denied.ejs"));
+    res.render("permission-denied.ejs");
 });
 
 // add new user to the DB
-router.post("/add-user/:username", function (req, res) {
-  let {massage, succeeded} = usersModel.addUser(req.body);
+router.post("/add-user/:username", async function (req, res) {
+  let {massage, succeeded} = await usersModel.addUser(req.body);
   res.status(succeeded ? 200 : 400);
   res.send(massage);
 });

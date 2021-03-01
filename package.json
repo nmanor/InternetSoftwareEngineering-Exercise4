@@ -14,5 +14,8 @@
     "mongodb": "^3.6.4",
     "morgan": "~1.9.1",
     "nodemon": "^2.0.7"
+  },
+  "devDependencies": {
+    "image-palette": "^2.1.0"
   }
 }

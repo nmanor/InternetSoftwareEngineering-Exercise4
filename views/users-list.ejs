@@ -22,7 +22,7 @@
 
         // else, try send the new user to the server
         $("#save-spinner").css("visibility", "visible")
-        let resp = await fetch(`/add-user/${username}`,
+        let resp = await fetch(`/users/add-user/${username}`,
             {
                 headers: {
                     'Content-Type': 'application/json'
@@ -57,7 +57,7 @@
 
     <% if(permission === "admin") { %>
     function updateUser(newType, username_) {
-        fetch(`/move-user/${username}`,
+        fetch(`/users/move-user/${username}`,
             {
                 headers: {
                     'Content-Type': 'application/json'
@@ -127,9 +127,8 @@
                 </div>
             </div>
 
-            <% for(let type in users) {
-                    for(let user in users[type]) {
-                user = users[type][user];
+            <% for(let user in users) {
+                user = users[user];
             if(user.active) { %>
                 <div class="col-sm-6 col-lg-4" style="margin-bottom: 30px">
                     <div class="card clean-card text-center align-items-center">
@@ -141,16 +140,16 @@
                             <p class="card-text">
                                 <%= user.username %>
                                 <% if(permission !== "admin") { %>
-                                    <%= " | " + type.charAt(0).toUpperCase() + type.slice(1, type.length - 1) %>
+                                    <%= " | " + user.type.charAt(0).toUpperCase() + user.type.slice(1, user.type.length - 1) %>
                                 <% } else { %>
                                     <select style="font-size: 12px" class="custom-select"
                                             onchange="updateUser(this.options[this.selectedIndex].value, '<%= user.username %>')">
-                                        <option value="admins" <%= type === "admins" ? "selected" : "" %> >Admin
+                                        <option value="admins" <%= user.type === "admin" ? "selected" : "" %> >Admin
                                         </option>
-                                        <option value="employees" <%= type === "employees" ? "selected" : "" %> >
+                                        <option value="employees" <%= user.type === "employee" ? "selected" : "" %> >
                                             Employee
                                         </option>
-                                        <option value="customers" <%= type === "customers" ? "selected" : "" %> >
+                                        <option value="customers" <%= user.type === "customer" ? "selected" : "" %> >
                                             Customer
                                         </option>
                                     </select>
@@ -159,7 +158,7 @@
                         </div>
                     </div>
                 </div>
-            <% }}} %>
+            <% }} %>
         </div>
     </div>
 </section>
