@@ -7,9 +7,9 @@ const ejs = require('ejs');
 
 let router = express.Router();
 
-router.post("/login", function (req, res) {
+router.post("/login", async function(req, res) {
     // get the user data from the DB
-    let userData = usersModel.login(req.body.username, req.body.password);
+    let userData = await usersModel.login(req.body.username, req.body.password);
 
     // if the user dont exist, return undefined
     if (userData === undefined) {
@@ -31,23 +31,23 @@ router.post("/login", function (req, res) {
             buttonsList.push("<li class=\"nav-item\"><a id=\"branches-btn\" class=\"nav-link active\" href=\"#\">Branches</a></li>");
 
         // send the data
-        res.send({welcomeHTML: welcomeHTML, buttonsList: buttonsList, username: userData.username});
+        res.send({ welcomeHTML: welcomeHTML, buttonsList: buttonsList, username: userData.username });
     }
 });
 
 // send the about section when requested
-router.get("/about/:username", function (req, res) {
+router.get("/about/:username", function(req, res) {
     res.render("about.ejs");
 });
 
 // send the contact-us section when requested
-router.get("/contact-us/:username", function (req, res) {
+router.get("/contact-us/:username", function(req, res) {
     res.render("contact-us.ejs");
 });
 
-router.get("/branches/:username", function (req, res) {
+router.get("/branches/:username", function(req, res) {
     if (usersModel.checkPermission(req.params.username, "admin"))
-        res.render("branches-list.ejs", {branches: branchesModel.getAllBranches()});
+        res.render("branches-list.ejs", { branches: branchesModel.getAllBranches() });
     else
         res.render("permission-denied.ejs");
 });
