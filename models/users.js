@@ -1,4 +1,4 @@
-const {MongoClient} = require('mongodb');
+const { MongoClient } = require('mongodb');
 
 /**
  * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
@@ -11,7 +11,7 @@ let client = new MongoClient(uri);
 let db;
 client.connect().then(() => {
     console.log("connected to mongo :)")
-    // Make the appropriate DB calls
+        // Make the appropriate DB calls
     db = client.db("FlowerOrderingSystem");
     console.log("created db")
 });
@@ -25,7 +25,7 @@ client.connect().then(() => {
  */
 module.exports.checkPermission = async function checkPermission(username, permission) {
     let type = await getType(username);
-    let permissions = {admin: 3, employee: 2, customer: 1};
+    let permissions = { admin: 3, employee: 2, customer: 1 };
 
     // returns if the user permission is great or equal to the excepted permission
     if (type !== undefined)
@@ -40,8 +40,8 @@ module.exports.checkPermission = async function checkPermission(username, permis
  * @returns {undefined|Object} returns Object with the user data if the user exist & the password matches the username,
  * else return undefined
  */
-module.exports.login = async function (username, password) {
-    let user = await db.collection("users").findOne({"username": username});
+module.exports.login = async function(username, password) {
+    let user = await db.collection("users").findOne({ "username": username });
 
     if (user.username === username && user.password === password && user.active) {
         console.log(user)
@@ -55,9 +55,9 @@ module.exports.login = async function (username, password) {
  * @param username {string} the username on which you want to receive the information
  * @returns {string|undefined} the user type, undefined if the user does not exist
  */
-async function getType (username) {
+async function getType(username) {
     // search the user name in th DB and return his type
-    let user = await db.collection("users").findOne({"username": username});
+    let user = await db.collection("users").findOne({ "username": username });
 
     if (user !== null && user.username === username && user.active) {
         return user.type;
@@ -71,12 +71,12 @@ module.exports.getType = getType
  * @param user {Object} the new user details
  * @returns {{massage: string, succeeded: boolean}} textual message and a boolean variable depending on the success / failure of the insertion
  */
-module.exports.addUser = async function (user) {
+module.exports.addUser = async function(user) {
     let username = user.username;
 
     // check if the user name already exist
     if (await getType(username) !== undefined)
-        return {massage: "Username already exist!", succeeded: false};
+        return { massage: "Username already exist!", succeeded: false };
 
     // if username not exist add the user into the DB
     await db.collection("users").insertOne({
@@ -89,23 +89,33 @@ module.exports.addUser = async function (user) {
         "active": true
     });
 
-    return {massage: "User added successfully!", succeeded: true};
+    return { massage: "User added successfully!", succeeded: true };
 }
 
-module.exports.moveUser = async function (username, newType) {
+module.exports.updateUser = async function(user) {
     let oldType = await getType(username) + "s";
 
     // if the user dont in the DB return false
     if (oldType === undefined)
         return false;
 
-    await db.collection("users").findOneAndUpdate({"username": username}, {$set: {type: newType}});
+    await db.collection("users").findOneAndUpdate({ "username": user.username }, {
+        $set: {
+            "firstName": user.firstName,
+            "lastName": user.lastName,
+            "username": user.username,
+            "password": user.password,
+            "type": user.type,
+            "image": user.imageURL,
+            "active": true
+        }
+    });
     return true;
 }
 
 /**
  * @returns {Promise<Promise|void|any[]>} All users saved in the system
  */
-module.exports.getAllUsers = async function () {
+module.exports.getAllUsers = async function() {
     return db.collection("users").find().toArray();
 }
