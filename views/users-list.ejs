@@ -1,5 +1,5 @@
 <script>
-    $("#save-btn").on("click", async function () {
+    $("#save-btn").on("click", async function() {
         let firstName = $("#first-name-in").val();
         let lastName = $("#last-name-in").val();
         let username_ = $("#username-in").val();
@@ -22,27 +22,30 @@
 
         // else, try send the new user to the server
         $("#save-spinner").css("visibility", "visible")
-        let resp = await fetch(`/users/add-user/${username}`,
-            {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify({
-                    firstName: firstName, lastName: lastName, username: username_, password: password,
-                    imageURL: imageURL, type: type
-                })
-            });
+        let resp = await fetch(`/users/add-user/${username}`, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify({
+                firstName: firstName,
+                lastName: lastName,
+                username: username_,
+                password: password,
+                imageURL: imageURL,
+                type: type
+            })
+        });
 
         if (resp.ok) {
-            resp.text().then(function (text) {
+            resp.text().then(function(text) {
                 console.log(text);
                 $("#message-banner").removeClass("bg-danger").addClass("bg-info").css("visibility", "visible");
                 $("#message-text").html(text);
                 location.assign("#");
             });
         } else {
-            resp.text().then(function (text) {
+            resp.text().then(function(text) {
                 console.log(text);
                 $("#message-banner").addClass("bg-danger").removeClass("bg-info").css("visibility", "visible");
                 $("#message-text").html(text);
@@ -51,22 +54,23 @@
         }
     });
 
-    $("#close-message-btn").on("click", async function () {
+    $("#close-message-btn").on("click", async function() {
         $("#main-content").load(`/users/${username}`);
     });
 
     <% if(permission === "admin") { %>
+
     function updateUser(newType, username_) {
-        fetch(`/users/move-user/${username}`,
-            {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify({
-                    username: username_, newType: newType
-                })
-            }).text().then(function (text) {
+        fetch(`/users/move-user/${username}`, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify({
+                username: username_,
+                newType: newType
+            })
+        }).text().then(function(text) {
             console.log(text);
         });
     }
@@ -74,8 +78,7 @@
 </script>
 
 <section class="clean-block about-us">
-    <div id="message-banner" class="clean-block add-on call-to-action"
-         style="visibility: collapse; padding-top: 20px;padding-bottom: 10px">
+    <div id="message-banner" class="clean-block add-on call-to-action" style="visibility: collapse; padding-top: 20px;padding-bottom: 10px">
         <h5 style="color: white" id="message-text"></h5>
         <button id="close-message-btn" class="btn btn-outline-light" type="button" style="margin-left: 20px">refresh
         </button>
@@ -84,9 +87,11 @@
     <div class="container">
         <div class="block-heading">
             <h2 class="text-info">Users</h2>
-            <p>View all users of all types, Add new <%= permission === "admin" ?
+            <p>View all users of all types, Add new
+                <%= permission === "admin" ?
                         "customers, employees and managers, change user permissions"
-                        : "customers" %></p>
+                        : "customers" %>
+            </p>
         </div>
 
         <div class="row justify-content-center">
@@ -96,20 +101,15 @@
                         <h4 class="card-title">
                             <% if (permission === "admin") { %>
                                 New User
-                            <% } else { %>
-                                New customer
-                            <% } %>
+                                <% } else { %>
+                                    New customer
+                                    <% } %>
                         </h4>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text"
-                                                       id="first-name-in" placeholder="First name"></div>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text"
-                                                       id="last-name-in" placeholder="Last name"></div>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text"
-                                                       id="username-in" placeholder="Username"></div>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="password"
-                                                       id="password-in" placeholder="Password"></div>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="url"
-                                                       id="image-url-in" placeholder="Image URL"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text" id="first-name-in" placeholder="First name"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text" id="last-name-in" placeholder="Last name"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text" id="username-in" placeholder="Username"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="password" id="password-in" placeholder="Password"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="url" id="image-url-in" placeholder="Image URL"></div>
 
                         <% if (permission === "admin") { %>
                             <select style="font-size: 12px" class="custom-select" id="type-selector">
@@ -117,8 +117,8 @@
                                 <option style="font-size: 12px" value="employees">Employee</option>
                                 <option style="font-size: 12px" value="customers">Customer</option>
                             </select>
-                        <% } %>
-                        <button class="btn btn-info" id="save-btn" style="margin-top: 10px;">
+                            <% } %>
+                                <button class="btn btn-info" id="save-btn" style="margin-top: 10px;">
                             <span id="save-spinner" style="visibility: hidden" class="spinner-border spinner-border-sm"
                                   role="status" aria-hidden="true"></span>
                             <span>Save</span>
@@ -133,32 +133,32 @@
                 <div class="col-sm-6 col-lg-4" style="margin-bottom: 30px">
                     <div class="card clean-card text-center align-items-center">
                         <img class="card-img-top w-50 d-block" style="border-radius: 40%; margin-top: 15px;
-                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
-                             src="<%= user.image %>">
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" src="<%= user.image %>">
                         <div class="card-body info">
-                            <h4 class="card-title"><%= user.firstName + " " + user.lastName %></h4>
+                            <h4 class="card-title">
+                                <%= user.firstName + " " + user.lastName %>
+                            </h4>
                             <p class="card-text">
                                 <%= user.username %>
-                                <% if(permission !== "admin") { %>
-                                    <%= " | " + user.type.charAt(0).toUpperCase() + user.type.slice(1, user.type.length - 1) %>
-                                <% } else { %>
-                                    <select style="font-size: 12px" class="custom-select"
-                                            onchange="updateUser(this.options[this.selectedIndex].value, '<%= user.username %>')">
-                                        <option value="admins" <%= user.type === "admin" ? "selected" : "" %> >Admin
+                                    <% if(permission !== "admin") { %>
+                                        <%= " | " + user.type.charAt(0).toUpperCase() + user.type.slice(1, user.type.length - 1) %>
+                                            <% } else { %>
+                                                <select style="font-size: 12px" class="custom-select" onchange="updateUser(this.options[this.selectedIndex].value, '<%= user.username %>')">
+                                        <option value="admin" <%= user.type === "admin" ? "selected" : "" %> >Admin
                                         </option>
-                                        <option value="employees" <%= user.type === "employee" ? "selected" : "" %> >
+                                        <option value="employee" <%= user.type === "employee" ? "selected" : "" %> >
                                             Employee
                                         </option>
-                                        <option value="customers" <%= user.type === "customer" ? "selected" : "" %> >
+                                        <option value="customer" <%= user.type === "customer" ? "selected" : "" %> >
                                             Customer
                                         </option>
                                     </select>
-                                <% } %>
+                                                <% } %>
                             </p>
                         </div>
                     </div>
                 </div>
-            <% }} %>
+                <% }} %>
         </div>
     </div>
 </section>

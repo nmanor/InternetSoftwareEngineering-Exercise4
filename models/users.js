@@ -92,25 +92,31 @@ module.exports.addUser = async function(user) {
     return { massage: "User added successfully!", succeeded: true };
 }
 
-module.exports.updateUser = async function(user) {
-    let oldType = await getType(username) + "s";
 
-    // if the user dont in the DB return false
+module.exports.updateUser = async function(username, newType) {
+    let oldType = await getType(username);
+    let succeeded = true,
+        message = "User updated successfully!"
+        // if the user dont in the DB return false
     if (oldType === undefined)
         return false;
 
+    let user = await this.getUser(username);
     await db.collection("users").findOneAndUpdate({ "username": user.username }, {
         $set: {
             "firstName": user.firstName,
             "lastName": user.lastName,
             "username": user.username,
             "password": user.password,
-            "type": user.type,
-            "image": user.imageURL,
+            "type": newType,
+            "image": user.image,
             "active": true
         }
+    }).catch(reason => {
+        succeeded = false;
+        message = reason;
     });
-    return true;
+    return { message: message, succeeded: succeeded };;
 }
 
 /**
@@ -118,4 +124,10 @@ module.exports.updateUser = async function(user) {
  */
 module.exports.getAllUsers = async function() {
     return db.collection("users").find().toArray();
+}
+
+module.exports.getUser = async function(username) {
+    let user = await db.collection("users").findOne({ username: username })
+    return user
+
 }
