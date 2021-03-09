@@ -27,4 +27,10 @@ router.post("/move-user/:username", function(req) {
     usersModel.updateUser(username, newType);
 });
 
+router.post("/remove-user/:username", function(req) {
+    let username = req.body.username;
+
+    usersModel.removeUser(username);
+});
+
 module.exports = router;

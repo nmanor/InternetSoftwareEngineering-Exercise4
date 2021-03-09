@@ -131,3 +131,9 @@ module.exports.getUser = async function(username) {
     return user
 
 }
+
+module.exports.removeUser = async function(username) {
+    return await db.collection("users").deleteOne({ username: username })
+
+
+}
