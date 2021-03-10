@@ -47,7 +47,7 @@ module.exports.removeProduct = async function(productId) {
 
 /**
  * A function that receives a product ID and tries to remove it from the product collection
- * @param productId The ID of the product to be removed
+ * @param product The ID of the product to be removed
  * @returns {Promise<{message: string, succeeded: boolean}>} Whether the operation was successful or not,
  * and an appropriate message
  */

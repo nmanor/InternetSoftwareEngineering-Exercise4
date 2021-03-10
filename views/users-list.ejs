@@ -1,5 +1,5 @@
 <script>
-    $("#save-btn").on("click", async function() {
+    $("#save-btn").on("click", async function () {
         let firstName = $("#first-name-in").val();
         let lastName = $("#last-name-in").val();
         let username_ = $("#username-in").val();
@@ -38,14 +38,14 @@
         });
 
         if (resp.ok) {
-            resp.text().then(function(text) {
+            resp.text().then(function (text) {
                 console.log(text);
                 $("#message-banner").removeClass("bg-danger").addClass("bg-info").css("visibility", "visible");
                 $("#message-text").html(text);
                 location.assign("#");
             });
         } else {
-            resp.text().then(function(text) {
+            resp.text().then(function (text) {
                 console.log(text);
                 $("#message-banner").addClass("bg-danger").removeClass("bg-info").css("visibility", "visible");
                 $("#message-text").html(text);
@@ -54,7 +54,7 @@
         }
     });
 
-    $("#close-message-btn").on("click", async function() {
+    $("#close-message-btn").on("click", async function () {
         $("#main-content").load(`/users/${username}`);
     });
 
@@ -70,7 +70,7 @@
                 username: username_,
                 newType: newType
             })
-        }).text().then(function(text) {
+        }).text().then(function (text) {
             console.log(text);
         });
     }
@@ -86,7 +86,7 @@
             body: JSON.stringify({
                 username: username_
             })
-        }).text().then(function(text) {
+        }).text().then(function (text) {
             console.log(text);
         });
     }
@@ -95,7 +95,8 @@
 </script>
 
 <section class="clean-block about-us">
-    <div id="message-banner" class="clean-block add-on call-to-action" style="visibility: collapse; padding-top: 20px;padding-bottom: 10px">
+    <div id="message-banner" class="clean-block add-on call-to-action"
+         style="visibility: collapse; padding-top: 20px;padding-bottom: 10px">
         <h5 style="color: white" id="message-text"></h5>
         <button id="close-message-btn" class="btn btn-outline-light" type="button" style="margin-left: 20px">refresh
         </button>
@@ -118,15 +119,20 @@
                         <h4 class="card-title">
                             <% if (permission === "admin") { %>
                                 New User
-                                <% } else { %>
-                                    New customer
-                                    <% } %>
+                            <% } else { %>
+                                New customer
+                            <% } %>
                         </h4>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text" id="first-name-in" placeholder="First name"></div>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text" id="last-name-in" placeholder="Last name"></div>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text" id="username-in" placeholder="Username"></div>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="password" id="password-in" placeholder="Password"></div>
-                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="url" id="image-url-in" placeholder="Image URL"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text"
+                                                       id="first-name-in" placeholder="First name"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text"
+                                                       id="last-name-in" placeholder="Last name"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="text"
+                                                       id="username-in" placeholder="Username"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="password"
+                                                       id="password-in" placeholder="Password"></div>
+                        <div class="form-group"><input class="form-control item" style="font-size: 12px" type="url"
+                                                       id="image-url-in" placeholder="Image URL"></div>
 
                         <% if (permission === "admin") { %>
                             <select style="font-size: 12px" class="custom-select" id="type-selector">
@@ -134,8 +140,8 @@
                                 <option style="font-size: 12px" value="employees">Employee</option>
                                 <option style="font-size: 12px" value="customers">Customer</option>
                             </select>
-                            <% } %>
-                                <button class="btn btn-info" id="save-btn" style="margin-top: 10px;">
+                        <% } %>
+                        <button class="btn btn-info" id="save-btn" style="margin-top: 10px;">
                             <span id="save-spinner" style="visibility: hidden" class="spinner-border spinner-border-sm"
                                   role="status" aria-hidden="true"></span>
                             <span>Save</span>
@@ -151,23 +157,30 @@
 
                     <div class="card clean-card text-center align-items-center">
                         <% if(permission === "admin") { %>
-                            <button type="button" class="btn btn-secondary" onclick="removeUser('<%= user.username %>')"><svg xmlns=" http://www.w3.org/2000/svg " width="16 " height="16 " fill="currentColor " class="bi bi-trash-fill " viewBox="0 0 16 16 ">
-                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8
+                            <button type="button" class="btn btn-secondary"
+                                    onclick="removeUser('<%= user.username %>')">
+                                <svg xmlns=" http://www.w3.org/2000/svg " width="16 " height="16 " fill="currentColor "
+                                     class="bi bi-trash-fill " viewBox="0 0 16 16 ">
+                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8
                                 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z "/>
-                                      </svg></button>
-                            <% }  %>
-                                <img class="card-img-top w-50 d-block " style="border-radius: 40%; margin-top: 15px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.19) " src="<%=u ser.image %>">
-                                <div class="card-body info">
-                                    <h4 class="card-title">
-                                        <%= user.firstName + " " + user.lastName %>
-                                    </h4>
-                                    <p class="card-text">
-                                        <%= user.username %>
-                                            <% if(permission !== "admin") { %>
-                                                <%= " | " + user.type.charAt(0).toUpperCase() + user.type.slice(1, user.type.length - 1) %>
-                                                    <% } else { %>
+                                </svg>
+                            </button>
+                        <% } %>
+                        <img class="card-img-top w-50 d-block "
+                             style="border-radius: 40%; margin-top: 15px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.19) "
+                             src="<%= user.image %>">
+                        <div class="card-body info">
+                            <h4 class="card-title">
+                                <%= user.firstName + " " + user.lastName %>
+                            </h4>
+                            <p class="card-text">
+                                <%= user.username %>
+                                <% if(permission !== "admin") { %>
+                                    <%= " | " + user.type.charAt(0).toUpperCase() + user.type.slice(1, user.type.length - 1) %>
+                                <% } else { %>
 
-                                                        <select style="font-size: 12px" class="custom-select" onchange="updateUser(this.options[this.selectedIndex].value, '<%= user.username %>')">
+                                    <select style="font-size: 12px" class="custom-select"
+                                            onchange="updateUser(this.options[this.selectedIndex].value, '<%= user.username %>')">
                                         <option value="admin" <%= user.type === "admin" ? "selected" : "" %> >Admin
                                         </option>
                                         <option value="employee" <%= user.type === "employee" ? "selected" : "" %> >
@@ -177,12 +190,12 @@
                                             Customer
                                         </option>
                                     </select>
-                                                        <% } %>
-                                    </p>
-                                </div>
+                                <% } %>
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <% }} %>
+            <% }} %>
         </div>
     </div>
 </section>
