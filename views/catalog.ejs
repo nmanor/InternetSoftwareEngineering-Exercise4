@@ -1,10 +1,113 @@
+<script>
+    <% if(permission === 'admin') { %>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    $("#new-flower-form").on("submit", async function (e) {
+        e.preventDefault();
+        let formData = new FormData(this);
+        let missingFieldsAlert = $("#missing-fields-allert");
+
+        // check that all the details exist
+        for (let value of formData.values()) {
+            if ((value instanceof File && value.name === "") || value.toString().length === 0) {
+                missingFieldsAlert.css({display: ''})
+                return;
+            }
+        }
+
+        // prepare the display to the saving process
+        $('#new-product-modal').modal('toggle');
+        $("#saving-user-spinner").css({display: ''});
+        $("#add-user-icon").css({display: 'none'});
+        missingFieldsAlert.css({display: 'none'});
+
+        // try to save the new flower to the DB for 5 sec
+        await Promise.race([
+            fetch(`/catalog/add-flower/${username}`, {
+                method: 'POST',
+                body: formData
+            }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+        ])
+            // in case the addition succeeded
+            .then(response => {
+                if (response.ok)
+                    response.text().then(showMessage)
+                else
+                    response.text().then(showError);
+            })
+
+            // in case the addition failed
+            .catch(showError)
+    });
+
+    $("#close-message-btn").on("click", async function () {
+        $("#main-content").load(`/catalog/${username}`);
+    });
+
+    $(".delete-btn").on("click", async function () {
+        let approve = confirm("Are you sure you want to delete this flower?")
+        if (approve) {
+            await Promise.race([
+                fetch(`/catalog/remove-flower/${username}`, {
+                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    body: JSON.stringify({id: $(this).data("id")})
+                }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+            ])
+                // in case the deletion succeeded
+                .then(response => {
+                    if (response.ok)
+                        response.text().then(showMessage)
+                    else
+                        response.text().then(showError);
+                })
+
+                // in case the deletion failed
+                .catch(showError)
+        }
+    });
+
+    function showError(text) {
+        console.log(text);
+        $("#message-banner").addClass("bg-danger").removeClass("bg-info").css({display: ''});
+        $("#message-text").html(text);
+        $("#saving-user-spinner").css({display: 'none'});
+        $("#add-user-icon").css({display: ''});
+        location.assign("#");
+    }
+
+    function showMessage(text) {
+        console.log(text);
+        $("#message-banner").removeClass("bg-danger").addClass("bg-info").css({display: ''});
+        $("#message-text").html(text);
+        $("#saving-user-spinner").css({display: 'none'});
+        $("#add-user-icon").css({display: ''});
+        location.assign("#");
+    }
+    <% } %>
+</script>
+
 <section class="clean-block about-us">
+    <% if(permission === 'admin') { %>
+        <div id="message-banner" class="clean-block add-on call-to-action"
+             style="padding-top: 20px;padding-bottom: 10px; display: none">
+            <h5 style="color: white" id="message-text"></h5>
+            <button id="close-message-btn" class="btn btn-outline-light" type="button" style="margin-left: 20px">refresh
+            </button>
+        </div>
+    <% } %>
+
     <div class="container">
         <div class="block-heading">
             <h2 class="text-info">Our catalog</h2>
             <p>We are proud to present to you the huge variety of flowers that we sell at affordable prices for every
                 pocket.</p>
         </div>
+
         <div class="row justify-content-center align-items-center">
             <% catalog.forEach(function (flower) {
                 var colors = palette(flower.image).colors;
@@ -27,6 +130,18 @@
                                 style="background:rgba(<%= colors[2].toString() %>); margin-right: 5px;margin-left: 5px;">
                             Add to cart
                         </button>
+
+                        <% if(permission === 'admin') { %>
+                            <button data-id="<%= flower._id %>" class="btn btn-danger delete-btn" data-toggle="tooltip"
+                                    title="Delete">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+                                     fill="none" style="margin: 0;margin-right: 0;">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M17 6V5C17 3.89543 16.1046 3 15 3H9C7.89543 3 7 3.89543 7 5V6H4C3.44772 6 3 6.44772 3 7C3 7.55228 3.44772 8 4 8H5V19C5 20.6569 6.34315 22 8 22H16C17.6569 22 19 20.6569 19 19V8H20C20.5523 8 21 7.55228 21 7C21 6.44772 20.5523 6 20 6H17ZM15 5H9V6H15V5ZM17 8H7V19C7 19.5523 7.44772 20 8 20H16C16.5523 20 17 19.5523 17 19V8Z"
+                                          fill="currentColor"></path>
+                                </svg>
+                            </button>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -35,3 +150,65 @@
         </div>
     </div>
 </section>
+
+<% if(permission === 'admin') { %>
+    <a class="shadow" data-toggle="modal" data-target="#new-product-modal" style="position:fixed;
+	width:60px;
+	height:60px;
+	bottom:40px;
+	left:40px;
+	background-color:#3B99E0;
+	color:#000000;
+	border-radius:50px;
+	text-align:center;
+    alignment: center">
+        <svg id="add-user-icon" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 30 16"
+             fill="white"
+             class="bi bi-person-plus-fill fa-2x text-gray-300"
+             style="height: 37px; width: 37px; margin-left: 6px; margin-top: 6px">
+            <path d="M12 4C11.4477 4 11 4.44772 11 5V11H5C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13H11V19C11 19.5523 11.4477 20 12 20C12.5523 20 13 19.5523 13 19V13H19C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11H13V5C13 4.44772 12.5523 4 12 4Z"></path>
+        </svg>
+        <span id="saving-user-spinner" class="spinner-border spinner-border-sm"
+              style="display: none; height: 30px; width: 30px; margin-top: 15px; color: white" role="status"></span>
+    </a>
+
+
+    <div class="modal fade" role="dialog" tabindex="-1" id="new-product-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <section class="clean-block clean-form dark" style="padding: 0px;border-radius: 25px;">
+                    <div class="container" style="padding-right: 0;padding-left: 0;">
+                        <h2 class="text-info" style="margin: 0;text-align: center;margin-top: 25px;">New flower</h2>
+                        <form id="new-flower-form" style="margin: 20px;" method="post" enctype="multipart/form-data">
+                            <h6 id="missing-fields-allert" style="color: red; display: none">You must complete all the
+                                fields</h6>
+                            <div class="form-group"><label for="name">Name</label><input type="text"
+                                                                                         class="form-control item"
+                                                                                         name="name"/></div>
+                            <div class="form-group"><label for="name">Color</label><input type="text"
+                                                                                          class="form-control item"
+                                                                                          name="color"/></div>
+                            <div class="form-group"><label for="name">Description</label><input type="text"
+                                                                                                class="form-control item"
+                                                                                                name="description"/>
+                            </div>
+                            <div class="form-group"><label for="name">Price</label><input type="number"
+                                                                                          class="form-control item"
+                                                                                          name="price"/></div>
+                            <div class="form-group"><label for="name">Image</label><input type="file"
+                                                                                          class="form-control item"
+                                                                                          name="image"/></div>
+                            <button class="btn btn-primary btn-block" type="submit" style="color: rgb(255,255,255);">
+                                Save
+                            </button>
+                            <button class="btn btn-primary btn-block" type="button"
+                                    style="background: rgb(213,213,213);color: rgb(0,0,0);border-style: none;"
+                                    data-dismiss="modal">Cancel
+                            </button>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+<% } %>

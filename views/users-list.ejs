@@ -156,16 +156,6 @@
                 <div class="col-sm-6 col-lg-4" style="margin-bottom: 30px">
 
                     <div class="card clean-card text-center align-items-center">
-                        <% if(permission === "admin") { %>
-                            <button type="button" class="btn btn-secondary"
-                                    onclick="removeUser('<%= user.username %>')">
-                                <svg xmlns=" http://www.w3.org/2000/svg " width="16 " height="16 " fill="currentColor "
-                                     class="bi bi-trash-fill " viewBox="0 0 16 16 ">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8
-                                5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z "/>
-                                </svg>
-                            </button>
-                        <% } %>
                         <img class="card-img-top w-50 d-block "
                              style="border-radius: 40%; margin-top: 15px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.19) "
                              src="<%= user.image %>">
@@ -193,6 +183,17 @@
                                 <% } %>
                             </p>
                         </div>
+                        <% if(permission === "admin") { %>
+                            <button type="button" class="btn btn-danger" style="margin-bottom: 10px"
+                                    onclick="removeUser('<%= user.username %>')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+                                     fill="none" style="margin: 0;margin-right: 0;">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M17 6V5C17 3.89543 16.1046 3 15 3H9C7.89543 3 7 3.89543 7 5V6H4C3.44772 6 3 6.44772 3 7C3 7.55228 3.44772 8 4 8H5V19C5 20.6569 6.34315 22 8 22H16C17.6569 22 19 20.6569 19 19V8H20C20.5523 8 21 7.55228 21 7C21 6.44772 20.5523 6 20 6H17ZM15 5H9V6H15V5ZM17 8H7V19C7 19.5523 7.44772 20 8 20H16C16.5523 20 17 19.5523 17 19V8Z"
+                                          fill="currentColor"></path>
+                                </svg>
+                            </button>
+                        <% } %>
                     </div>
                 </div>
             <% }} %>

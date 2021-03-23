@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectID } = require('mongodb');
 const uri = "mongodb+srv://admin:Mongodb2021@cluster0.u7xlk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 // Connect to the MongoDB cluster
@@ -13,6 +13,10 @@ module.exports.getAllProducts = async function() {
     return db.find().toArray();
 }
 
+module.exports.getProductById = async function(productId) {
+    return db.findOne({ _id: ObjectID(productId) });
+}
+
 /**
  * A function that receives a product and tries to add it to the product collection
  * @param product The product to be added
@@ -21,7 +25,7 @@ module.exports.getAllProducts = async function() {
  */
 module.exports.insertProduct = async function(product) {
     let succeeded = true,
-        message = "Product added successfully!"
+        message = "Product added successfully!";
     await db.insert(product).catch(reason => {
         succeeded = false;
         message = reason;
@@ -38,7 +42,7 @@ module.exports.insertProduct = async function(product) {
 module.exports.removeProduct = async function(productId) {
     let succeeded = true,
         message = "Product removed successfully!"
-    await db.remove({ _id: productId }).catch(reason => {
+    await db.remove({ _id: ObjectID(productId) }).catch(reason => {
         succeeded = false;
         message = reason;
     });
